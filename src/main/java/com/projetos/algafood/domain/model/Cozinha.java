@@ -5,12 +5,13 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.util.Objects;
 
-@Entity
+@Entity(name = "tab_cozinhas")
 public class Cozinha {
 
     @Id
     private Long id;
 
+    @Column(name = "col_nome")
     private String nome;
 
     @Override
