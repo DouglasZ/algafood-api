@@ -6,7 +6,6 @@ import com.projetos.algafood.domain.model.Cozinha;
 
 public interface CozinhaRepository
 {
-
 	List<Cozinha> listar();
 
 	Cozinha buscar( Long id );
