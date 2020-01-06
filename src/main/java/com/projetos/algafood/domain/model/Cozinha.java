@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+// @JsonRootName("cozinha") // Customizamos o nome do objeto em XML
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
@@ -19,6 +20,7 @@ public class Cozinha
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	// @JsonProperty("descricao") // Customizamos o nome do atributo em XML
 	@Column(nullable = false)
 	private String nome;
 }
