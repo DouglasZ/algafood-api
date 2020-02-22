@@ -1,5 +1,6 @@
 package com.projetos.algafood.api.controller;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
@@ -7,6 +8,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projetos.algafood.domain.exception.EntidadeNaoEncontradaException;
 import com.projetos.algafood.domain.model.Restaurante;
 import com.projetos.algafood.domain.repository.RestauranteRepository;
@@ -88,6 +91,9 @@ public class RestauranteController
 		}
 	}
 
+	/**
+	 * Método apenas para estudo de como usar o Patch
+	 */
 	@PatchMapping("/{restauranteId}")
 	public ResponseEntity<?> atualizarParcial( @PathVariable Long restauranteId, @RequestBody Map<String, Object> campos )
 	{
@@ -103,10 +109,27 @@ public class RestauranteController
 		return atualizar( restauranteId, restauranteAtual );
 	}
 
-	private void merge( Map<String, Object> camposOrigem, Restaurante restauranteDestino )
+	private void merge( Map<String, Object> dadosOrigem, Restaurante restauranteDestino )
 	{
-		camposOrigem.forEach( ( nomePropriedade, valorPropriedade ) -> {
-			System.out.println( nomePropriedade + " = " + valorPropriedade );
+		// Responsável por realizar a Serialização, ou seja, Objetos Java em JSON ou JSON em Objetos Java
+		ObjectMapper objectMapper = new ObjectMapper(  );
+		// Cria uma instância do tipo Restaurante, usando como base o mapa com os dados de origem
+		Restaurante restauranteOrigem = objectMapper.convertValue( dadosOrigem, Restaurante.class );
+
+		// Reflections: Torna possível a inspeção de objetos, chamada de métodos e alteração de atributos
+		// em tempo de execução e de forma dinâmica.
+		dadosOrigem.forEach( ( nomePropriedade, valorPropriedade ) -> {
+			Field field = ReflectionUtils.findField( Restaurante.class, nomePropriedade );
+			// Torna acessivel a variavel do objeto, porque ele está declarado como private.
+			field.setAccessible( true );
+
+			// Usamos os valores dos atributos convertidos pelo objectMapper, pois se usarmos o valorPropriedade,
+			// temos problemas de incompatibilidades com o tipo dos atribudos declarado na classe.
+			Object novoValor = ReflectionUtils.getField( field, restauranteOrigem );
+
+//			System.out.println( nomePropriedade + " = " + valorPropriedade + " - " + novoValor);
+
+			ReflectionUtils.setField( field, restauranteDestino, novoValor );
 		} );
 	}
 }
