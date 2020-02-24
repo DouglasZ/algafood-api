@@ -11,4 +11,6 @@ import com.projetos.algafood.domain.model.Cozinha;
 public interface CozinhaRepository extends JpaRepository<Cozinha, Long>
 {
 	List<Cozinha> findByNomeContaining( String Nome );
+
+	boolean existsByNome( String nome );
 }
