@@ -18,14 +18,14 @@ public class CadastroCozinhaService
 
 	public Cozinha salvar( Cozinha cozinha )
 	{
-		return cozinhaRepository.salvar( cozinha );
+		return cozinhaRepository.save( cozinha );
 	}
 
 	public void excluir( Long conzinhaId )
 	{
 		try
 		{
-			cozinhaRepository.remover( conzinhaId );
+			cozinhaRepository.deleteById( conzinhaId );
 		}
 		catch ( EmptyResultDataAccessException e )
 		{
