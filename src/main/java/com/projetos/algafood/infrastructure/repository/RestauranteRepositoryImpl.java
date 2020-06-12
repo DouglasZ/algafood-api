@@ -1,5 +1,8 @@
 package com.projetos.algafood.infrastructure.repository;
 
+import static com.projetos.algafood.infrastructure.repository.spec.RestauranteSpecs.comFreteGratis;
+import static com.projetos.algafood.infrastructure.repository.spec.RestauranteSpecs.comNomeSemelhante;
+
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -14,10 +17,13 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import com.projetos.algafood.domain.model.Restaurante;
+import com.projetos.algafood.domain.repository.RestauranteRepository;
 import com.projetos.algafood.domain.repository.RestauranteRepositoryQueries;
 
 @Repository
@@ -25,6 +31,11 @@ public class RestauranteRepositoryImpl implements RestauranteRepositoryQueries
 {
     @PersistenceContext
     private EntityManager manager;
+
+    // Esta injeção de dependência causa um problema de referência circular, mas com o @Lazy "corrigimos" esse problema,
+    // Pois essa dependêcia só será instanciada somente quando precisar.
+    @Autowired @Lazy
+    private RestauranteRepository restauranteRepository;
 
     /**
      * Consulta com Criteria
@@ -58,6 +69,12 @@ public class RestauranteRepositoryImpl implements RestauranteRepositoryQueries
 
         TypedQuery<Restaurante> query = manager.createQuery( criteria );
         return query.getResultList();
+    }
+
+    @Override
+    public List<Restaurante> findComFreteGratis( String nome )
+    {
+        return restauranteRepository.findAll( comFreteGratis().and( comNomeSemelhante( nome ) ) );
     }
 
 //    /**
