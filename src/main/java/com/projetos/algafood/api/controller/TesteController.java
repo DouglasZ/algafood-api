@@ -33,6 +33,12 @@ public class TesteController
         return cozinhaRepository.findByNomeContaining( nome );
     }
 
+    @GetMapping("/cozinhas/primeira")
+    public Optional<Cozinha> cozinhasPrimeiro()
+    {
+        return cozinhaRepository.buscarPrimeiro();
+    }
+
     @GetMapping("/restaurantes/por-taxa-frete")
     public List<Restaurante> restaurantesPorTaxaFrete( BigDecimal taxaInicial, BigDecimal taxaFinal )
     {
@@ -80,5 +86,11 @@ public class TesteController
     public List<Restaurante> restauranteComFreteGratis( String nome )
     {
         return restauranteRepository.findComFreteGratis( nome );
+    }
+
+    @GetMapping("/restaurantes/primeiro")
+    public Optional<Restaurante> restaurantePrimeiro()
+    {
+        return restauranteRepository.buscarPrimeiro();
     }
 }
