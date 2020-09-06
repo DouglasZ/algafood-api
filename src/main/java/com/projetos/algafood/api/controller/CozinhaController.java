@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.projetos.algafood.api.controller.model.CozinhasXmlWrapper;
 import com.projetos.algafood.domain.exception.EntidadeEmUsoException;
@@ -105,6 +106,13 @@ public class CozinhaController
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void remover( @PathVariable Long cozinhaId )
 	{
-		cadastroCozinha.excluir( cozinhaId );
+		try
+		{
+			cadastroCozinha.excluir( cozinhaId );
+		}
+		catch ( EntidadeNaoEncontradaException e )
+		{
+			throw new ResponseStatusException( HttpStatus.NOT_FOUND, e.getMessage() );
+		}
 	}
 }
