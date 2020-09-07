@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projetos.algafood.domain.exception.EntidadeNaoEncontradaException;
+import com.projetos.algafood.domain.exception.NegocioException;
 import com.projetos.algafood.domain.model.Restaurante;
 import com.projetos.algafood.domain.repository.RestauranteRepository;
 import com.projetos.algafood.domain.service.CadastroRestauranteService;
@@ -48,50 +49,19 @@ public class RestauranteController
 		return cadastroRestaurante.buscar( restauranteId );
 	}
 
-//	@PostMapping
-//	// ? = wildcard - Retorno gernérico. Pode ser um objeto, string, etc.
-//	public ResponseEntity<?> adicionar( @RequestBody Restaurante restaurante )
-//	{
-//		try
-//		{
-//			restaurante = cadastroRestaurante.salvar( restaurante );
-//			return ResponseEntity.status( HttpStatus.CREATED ).body( restaurante );
-//		}
-//		catch ( EntidadeNaoEncontradaException e )
-//		{
-//			return ResponseEntity.badRequest().body( e.getMessage() );
-//		}
-//	}
-
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public Restaurante adicionar( @RequestBody Restaurante restaurante )
 	{
-		return cadastroRestaurante.salvar( restaurante );
+		try
+		{
+			return cadastroRestaurante.salvar( restaurante );		
+		}
+		catch ( EntidadeNaoEncontradaException e )
+		{
+			throw new NegocioException( e.getMessage() );
+		}
 	}
-//
-//	@PutMapping("/{restauranteId}")
-//	public ResponseEntity<?> atualizar( @PathVariable Long restauranteId, @RequestBody Restaurante restaurante )
-//	{
-//		try
-//		{
-//			Optional<Restaurante> restauranteAtual = restauranteRepository.findById( restauranteId );
-//
-//			if ( restauranteAtual.isPresent() )
-//			{
-//				BeanUtils.copyProperties( restaurante, restauranteAtual.get(), "id", "formasPagamento", "endereco", "dataCadastro" );
-//
-//				Restaurante restauranteSalvo = cadastroRestaurante.salvar( restauranteAtual.get() );
-//				return ResponseEntity.ok( restauranteSalvo );
-//			}
-//
-//			return ResponseEntity.notFound().build();
-//		}
-//		catch ( EntidadeNaoEncontradaException e )
-//		{
-//			return ResponseEntity.badRequest().body( e.getMessage() );
-//		}
-//	}
 
 	@PutMapping("/{restauranteId}")
 	public Restaurante atualizar( @PathVariable Long restauranteId, @RequestBody Restaurante restaurante )
@@ -101,7 +71,14 @@ public class RestauranteController
 		BeanUtils.copyProperties( restaurante, restauranteAtual,
 				"id", "formasPagamento", "endereco", "dataCadastro", "produtos" );
 
-		return cadastroRestaurante.salvar( restauranteAtual );
+		try
+		{
+			return cadastroRestaurante.salvar( restauranteAtual );
+		}
+		catch ( EntidadeNaoEncontradaException e )
+		{
+			throw new NegocioException( e.getMessage() );
+		}
 	}
 
 	/**
