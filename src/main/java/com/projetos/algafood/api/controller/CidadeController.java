@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.projetos.algafood.domain.exception.EntidadeEmUsoException;
 import com.projetos.algafood.domain.exception.EntidadeNaoEncontradaException;
+import com.projetos.algafood.domain.exception.NegocioException;
 import com.projetos.algafood.domain.model.Cidade;
 import com.projetos.algafood.domain.repository.CidadeRepository;
 import com.projetos.algafood.domain.service.CadastroCidadeService;
@@ -45,50 +46,19 @@ public class CidadeController
 		return cadastroCidade.buscar( cidadeId );
 	}
 
-//	@PostMapping
-//	// ? = wildcard - Retorno gernérico. Pode ser um objeto, string, etc.
-//	public ResponseEntity<?> adicionar( @RequestBody Cidade cidade )
-//	{
-//		try
-//		{
-//			cidade = cadastroCidade.salvar( cidade );
-//			return ResponseEntity.status( HttpStatus.CREATED ).body( cidade );
-//		}
-//		catch ( EntidadeNaoEncontradaException e )
-//		{
-//			return ResponseEntity.badRequest().body( e.getMessage() );
-//		}
-//	}
-
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public Cidade adicionar( @RequestBody Cidade cidade )
 	{
-		return cadastroCidade.salvar( cidade );
+		try
+		{
+			return cadastroCidade.salvar( cidade );
+		}
+		catch ( EntidadeNaoEncontradaException e )
+		{
+			throw new NegocioException( e.getMessage() );
+		}
 	}
-
-//	@PutMapping("/{cidadeId}")
-//	public ResponseEntity<?> atualizar( @PathVariable Long cidadeId, @RequestBody Cidade cidade )
-//	{
-//		try
-//		{
-//			Optional<Cidade> cidadeAtual = cidadeRepository.findById( cidadeId );
-//
-//			if ( cidadeAtual.isPresent() )
-//			{
-//				BeanUtils.copyProperties( cidade, cidadeAtual.get(), "id" );
-//
-//				Cidade cidadeSalva = cadastroCidade.salvar( cidadeAtual.get() );
-//				return ResponseEntity.ok( cidadeSalva );
-//			}
-//
-//			return ResponseEntity.notFound().build();
-//		}
-//		catch ( EntidadeNaoEncontradaException e )
-//		{
-//			return ResponseEntity.badRequest().body( e.getMessage() );
-//		}
-//	}
 
 	@PutMapping("/{cidadeId}")
 	public Cidade atualizar( @PathVariable Long cidadeId, @RequestBody Cidade cidade )
@@ -97,7 +67,14 @@ public class CidadeController
 
 		BeanUtils.copyProperties( cidade, cidadeAtual, "id" );
 
-		return cadastroCidade.salvar( cidadeAtual );
+		try
+		{
+			return cadastroCidade.salvar( cidadeAtual );
+		}
+		catch ( EntidadeNaoEncontradaException e )
+		{
+			throw new NegocioException( e.getMessage() );
+		}
 	}
 
 	@DeleteMapping("/{cidadeId}")
