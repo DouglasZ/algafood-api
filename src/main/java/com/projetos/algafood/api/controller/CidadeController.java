@@ -3,6 +3,7 @@ package com.projetos.algafood.api.controller;
 import java.util.List;
 import java.util.Optional;
 
+import com.projetos.algafood.domain.exception.EstadoNaoEncontradoException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -54,26 +55,26 @@ public class CidadeController
 		{
 			return cadastroCidade.salvar( cidade );
 		}
-		catch ( EntidadeNaoEncontradaException e )
+		catch ( EstadoNaoEncontradoException e )
 		{
-			throw new NegocioException( e.getMessage() );
+			throw new NegocioException( e.getMessage(), e );
 		}
 	}
 
 	@PutMapping("/{cidadeId}")
 	public Cidade atualizar( @PathVariable Long cidadeId, @RequestBody Cidade cidade )
 	{
-		Cidade cidadeAtual = cadastroCidade.buscar( cidadeId );
-
-		BeanUtils.copyProperties( cidade, cidadeAtual, "id" );
-
 		try
 		{
+			Cidade cidadeAtual = cadastroCidade.buscar( cidadeId );
+
+			BeanUtils.copyProperties( cidade, cidadeAtual, "id" );
+
 			return cadastroCidade.salvar( cidadeAtual );
 		}
-		catch ( EntidadeNaoEncontradaException e )
+		catch ( EstadoNaoEncontradoException e )
 		{
-			throw new NegocioException( e.getMessage() );
+			throw new NegocioException( e.getMessage(), e );
 		}
 	}
 
