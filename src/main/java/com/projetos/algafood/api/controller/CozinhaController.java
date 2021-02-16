@@ -1,13 +1,11 @@
 package com.projetos.algafood.api.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,11 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.projetos.algafood.api.controller.model.CozinhasXmlWrapper;
-import com.projetos.algafood.domain.exception.EntidadeEmUsoException;
-import com.projetos.algafood.domain.exception.EntidadeNaoEncontradaException;
 import com.projetos.algafood.domain.model.Cozinha;
 import com.projetos.algafood.domain.repository.CozinhaRepository;
 import com.projetos.algafood.domain.service.CadastroCozinhaService;
