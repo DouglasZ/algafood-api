@@ -1,13 +1,14 @@
 package com.projetos.algafood.domain.exception;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
-@ResponseStatus(HttpStatus.CONFLICT)
 public class EntidadeEmUsoException extends NegocioException
 {
 	public EntidadeEmUsoException( String mensagem )
 	{
 		super( mensagem );
+	}
+
+	public EntidadeEmUsoException( Class<?> entidade, Long estadoId )
+	{
+		this( String.format( "%s de código %d não pode ser removida, pois está em uso.", entidade.getSimpleName(), estadoId ) );
 	}
 }

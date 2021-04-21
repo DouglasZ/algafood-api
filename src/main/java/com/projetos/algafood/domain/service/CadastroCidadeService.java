@@ -14,8 +14,6 @@ import com.projetos.algafood.domain.repository.CidadeRepository;
 @Service
 public class CadastroCidadeService
 {
-	public static final String MSG_CIDADE_EM_USO = "Cidade de código %d não pode ser removida, pois está em uso.";
-	
 	@Autowired
 	private CidadeRepository cidadeRepository;
 
@@ -41,12 +39,11 @@ public class CadastroCidadeService
 		}
 		catch ( EmptyResultDataAccessException e )
 		{
-			throw new CidadeNaoEncontradaException(cidadeId );
+			throw new CidadeNaoEncontradaException( cidadeId );
 		}
 		catch ( DataIntegrityViolationException e )
 		{
-			throw new EntidadeEmUsoException(
-					String.format( MSG_CIDADE_EM_USO, cidadeId ) );
+			throw new EntidadeEmUsoException( Cidade.class, cidadeId );
 		}
 	}
 
