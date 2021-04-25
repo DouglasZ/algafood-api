@@ -1,7 +1,5 @@
 package com.projetos.algafood.api.exceptionhandler;
 
-import java.time.LocalDateTime;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,19 +21,22 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler
 	 * Método responsável por tratar todas as exceções que são desse tipo (EntidadeNaoEncontradaException) incluindo subclasses dela
 	 */
 	@ExceptionHandler(EntidadeNaoEncontradaException.class)
-	public ResponseEntity<?> tratarEstadoNaoEncontradoException( EntidadeNaoEncontradaException ex, WebRequest request )
+	public ResponseEntity<?> handleEntidadeNaoEncontradoException( EntidadeNaoEncontradaException ex, WebRequest request )
 	{
-		return handleExceptionInternal( ex, ex.getMessage(), new HttpHeaders(), HttpStatus.NOT_FOUND, request );
+		HttpStatus status = HttpStatus.NOT_FOUND;
+		Problem problem = createProblemBuilder( status, ProblemType.ENTIDADE_NAO_ENCONTRADA, ex.getMessage() ).build();
+
+		return handleExceptionInternal( ex, problem, new HttpHeaders(), status, request );
 	}
 
 	@ExceptionHandler(EntidadeEmUsoException.class)
-	public ResponseEntity<?> tratarEntidadeEmUsoException( EntidadeEmUsoException ex, WebRequest request )
+	public ResponseEntity<?> handleEntidadeEmUsoException( EntidadeEmUsoException ex, WebRequest request )
 	{
 		return handleExceptionInternal( ex, ex.getMessage(), new HttpHeaders(), HttpStatus.CONFLICT, request );
 	}
 
 	@ExceptionHandler(NegocioException.class)
-	public ResponseEntity<?> tratarNegocioException( NegocioException ex, WebRequest request )
+	public ResponseEntity<?> handleNegocioException( NegocioException ex, WebRequest request )
 	{
 		return handleExceptionInternal( ex, ex.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request );
 	}
@@ -46,18 +47,30 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler
 		if ( body == null )
 		{
 			// Builder é um padrão de projeto para construir objetos de uma forma mais fluente
-			body = Problema.builder()
-					.dataHora( LocalDateTime.now() )
-					.mensagem( status.getReasonPhrase() ).build();
+			body = Problem.builder()
+					.title( status.getReasonPhrase() )
+					.status( status.value() )
+					.build();
 		}
 		else if ( body instanceof String )
 		{
 			// Builder é um padrão de projeto para construir objetos de uma forma mais fluente
-			body = Problema.builder()
-					.dataHora( LocalDateTime.now() )
-					.mensagem( (String) body ).build();
+			body = Problem.builder()
+					.title( (String) body )
+					.status( status.value() )
+					.build();
 		}
 
 		return super.handleExceptionInternal( ex, body, headers, status, request );
 	}
+
+	private Problem.ProblemBuilder createProblemBuilder( HttpStatus status, ProblemType problemType, String detail )
+	{
+		return Problem.builder()
+				.status( status.value() )
+				.type( problemType.getUri() )
+				.title( problemType.getTitle() )
+				.detail( detail );
+	}
+
 }
